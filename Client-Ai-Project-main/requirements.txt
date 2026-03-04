@@ -1,0 +1,10 @@
+fastapi[standard]
+sqlalchemy
+psycopg2-binary
+chromadb
+pydantic
+pydantic-settings
+pymupdf
+google-genai
+python-multipart
+python-dotenv

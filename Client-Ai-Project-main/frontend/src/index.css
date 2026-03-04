@@ -1,0 +1,167 @@
+@import "tailwindcss";
+@plugin "tailwindcss-animate";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --font-sans: "Inter", "system-ui", "-apple-system", sans-serif;
+  --color-canvas: #f8fafc;
+  --color-card: #ffffff;
+  --color-border: #e2e8f0;
+
+  --shadow-node: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-panel: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+html,
+body,
+#root {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-canvas);
+  color: #1a202c;
+  overflow: hidden;
+}
+
+/* Base Node overrides for smooth presentation */
+.react-flow__node {
+  border-radius: 0.75rem;
+  background-color: var(--color-card);
+  box-shadow: var(--shadow-node);
+  border: 1px solid var(--color-border);
+}
+
+.react-flow__node.selected,
+.react-flow__node:focus,
+.react-flow__node:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 2px #3b82f6 !important;
+  border-color: #3b82f6 !important;
+}
+
+/* Ports / Handles */
+.react-flow__handle {
+  width: 10px !important;
+  height: 10px !important;
+  background-color: #1e293b !important;
+  /* slate-800 */
+  border: 2px solid white !important;
+  border-radius: 50% !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: crosshair !important;
+  z-index: 10;
+}
+
+/* Hover effect */
+.react-flow__handle:hover {
+  width: 14px !important;
+  height: 14px !important;
+  background-color: #3b82f6 !important;
+  /* blue-500 */
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+}
+
+/* Source handles (Outputs) - maybe a different color? */
+.react-flow__handle-right,
+.react-flow__handle-bottom {
+  /* background-color: #0f172a !important; */
+}
+
+/* Connecting state pulse */
+.react-flow__handle.connecting {
+  animation: portPulse 1.5s infinite;
+  background-color: #3b82f6 !important;
+}
+
+/* Valid connection feedback */
+.react-flow__handle.valid {
+  background-color: #10b981 !important;
+  /* emerald-500 */
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.3);
+  scale: 1.2;
+}
+
+/* Invalid connection feedback */
+.react-flow__handle.invalid {
+  background-color: #ef4444 !important;
+  /* red-500 */
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
+}
+
+@keyframes portPulse {
+  0% {
+    box-shadow: 0 0 0 0px rgba(59, 130, 246, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 6px rgba(59, 130, 246, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0px rgba(59, 130, 246, 0);
+  }
+}
+
+.react-flow__edge-path {
+  stroke-width: 2.5 !important;
+  stroke: #94a3b8 !important;
+  transition: stroke 0.3s ease;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: #3b82f6 !important;
+  stroke-width: 3 !important;
+}
+
+@layer utilities {
+  .fade-in-animation {
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+}
+
+/* Premium Controls Styles */
+.react-flow__controls {
+  border: none !important;
+  box-shadow: none !important;
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 0.25rem !important;
+}
+
+.react-flow__controls-button {
+  border: none !important;
+  border-bottom: none !important;
+  background: transparent !important;
+  width: 32px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 0.5rem !important;
+  color: #475569 !important;
+  /* slate-600 */
+  transition: all 0.2s ease !important;
+}
+
+.react-flow__controls-button:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: #1e293b !important;
+}
+
+.react-flow__controls-button svg {
+  fill: currentColor !important;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

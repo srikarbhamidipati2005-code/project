@@ -1,0 +1,77 @@
+# docker-compose.yml for AI-Workflow-Engine
+
+services:
+  # Database Service (PostgreSQL)
+  db:
+    image: postgres:15-alpine
+    container_name: ai_planet_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ai_user
+      POSTGRES_PASSWORD: ai_password
+      POSTGRES_DB: ai_planet_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ai_user -d ai_planet_db" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ChromaDB Service
+  chromadb:
+    image: chromadb/chroma:0.6.3
+    container_name: ai_planet_chromadb
+    platform: linux/amd64
+    restart: always
+    ports:
+      - "8001:8000" # Mapping to 8001 on host to avoid port 8000 conflict with Backend
+    volumes:
+      - chroma_data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma
+
+  # FastAPI Backend Service
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ai_planet_backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_USER=ai_user
+      - DB_PASSWORD=ai_password
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=ai_planet_db
+      - DATABASE_URL=postgresql://ai_user:ai_password@db:5432/ai_planet_db
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+    volumes:
+      - ./.env:/app/.env
+    depends_on:
+      db:
+        condition: service_healthy
+      chromadb:
+        condition: service_started
+
+  # React + Vite Frontend Service (Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ai_planet_frontend
+    restart: always
+    ports:
+      - "3000:80" # Expose Frontend on http://localhost:3000
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  chroma_data:
